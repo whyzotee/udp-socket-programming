@@ -12,7 +12,7 @@ def main():
 
     sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 
-    sock.bind((UDP_IP, UDP_PORT))
+    sock.bind(SERVER_ADDR)
 
     print("Server ready to received message \n")
 
