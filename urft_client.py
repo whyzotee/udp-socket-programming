@@ -1,6 +1,6 @@
 import os
-import random
 import sys
+import random
 from socket import *
 
 if len(sys.argv) < 4:
@@ -22,7 +22,7 @@ file = open(FILE_PATH, "rb")
 
 enable_duplicate = False  # เปิด/ปิด การส่ง packet ซ้ำ
 enable_lost = False  # เปิด/ปิด การส่ง packet lost (packet ไปไม่ถึง server)
-error_rate = 0.1
+error_rate = 0.8
 
 time_out = 0.25  # Timeout 0.25 วิ
 byte_data = 4096  # ขนาดของ packet ที่ตัดส่ง และ รอรับจาก server
@@ -48,19 +48,16 @@ def get_response_from_server():
 
 def retransmit(seq_num, last_byte_send):
     retransmit_time = 0
+    global last_ack
 
     # สร้าง packet ที่ lost ไปตอนส่ง
     file.seek(last_byte_send)
     data = file.read(byte_data)
     packet = f"{seq_num:08d}".encode() + data
 
-    # Retransmit
-    # sock.sendto(packet, SERVER_ADDR)
-    # print(f"[Client] Retransmit send {last_byte_send} seq", seq_num)
-    
     result = None
 
-    while result == "TIME_OUT" or result == False or retransmit_time < 5:
+    while (result == "TIME_OUT" or result == False) or retransmit_time < 10:
         sock.sendto(packet, SERVER_ADDR)
         print("[Client] Error timeout Retransmit... packet", last_byte_send, "seq", seq_num)
 
@@ -89,9 +86,12 @@ def send_file_byte():
         data = file.read(byte_data)
         packet = f"{seq_num:08d}".encode() + data # สร้าง packet โดยนำ Seq number + Fragmented 
 
+        if enable_lost and random.random() < error_rate:
+            print("[Client] simple lost")
         # ส่ง packet ไปที่ Server
-        sock.sendto(packet, SERVER_ADDR)
-        print(f"[Client] send {file.tell()} seq", seq_num)
+        else:
+            sock.sendto(packet, SERVER_ADDR)
+            print(f"[Client] send {file.tell()} seq", seq_num)
 
         # จำลอง Duplicate packet
         if enable_duplicate and random.random() < error_rate:
@@ -127,7 +127,6 @@ def send_file_byte():
         seq_num = 1 - ack  # สลับ seq
 
     return readed_file_bytes
-
 
 print("[Client] UDP target IP:", SERVER_ADDR, " File:", FILE, end="\n\n")
 

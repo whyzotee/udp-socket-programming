@@ -17,9 +17,9 @@ sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 filename = None
 file = None
 max_file_size = -1
-error_rate = 0.5
+error_rate = 0.8
 
-enable_duplicate = True # เปิด/ปิด การส่ง packet ซ้ำ
+enable_duplicate = False # เปิด/ปิด การส่ง packet ซ้ำ
 enable_lost = False # rdt 3.0 ใช้ไม่ได้ เปิด/ปิด การส่ง packet lost (packet ไปไม่ถึง server)
 client_recive_init = False
 
