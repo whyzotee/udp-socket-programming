@@ -20,7 +20,7 @@ file = None
 max_file_size = -1
 
 enable_duplicate = False # เปิด/ปิด การส่ง packet ซ้ำ
-enable_lost = True # เปิด/ปิด การส่ง packet lost (packet ไปไม่ถึง server)
+enable_lost = False # rdt 3.0 ใช้ไม่ได้ เปิด/ปิด การส่ง packet lost (packet ไปไม่ถึง server)
 client_recive_init = False
 
 error_count = 5
@@ -53,6 +53,8 @@ while True:
 
         if file == None and filename != None:
             file = open(filename, "wb")
+            if enable_duplicate :
+                sock.sendto("__INITIAL_CONNECTION__".encode(), addr)
             sock.sendto("__INITIAL_CONNECTION__".encode(), addr)
             print("[Server] initial file name and size", filename, max_file_size, end="\n\n")
         continue
@@ -62,13 +64,11 @@ while True:
     
     if file is not None:
         if seq_num != wait_for_ack:
-            sock.sendto(f"{seq_num}".encode(), addr)
             print(f"[Server] Not match ACK packet {wait_for_ack} ({file.tell()}) ignore...", end="\n\n")
             continue
         
         file.write(data[8:])
         wait_for_ack = 1 - seq_num
-        print("[Server] write byte", file.tell(),"ack", seq_num)
 
         if enable_lost and random.random() < 0.05:
             print(f"[Server] Simple lost packet {seq_num}", end="\n\n")
@@ -77,11 +77,14 @@ while True:
         sock.sendto(f"{seq_num}".encode(), addr)
         print(f"[Server] ack to client {seq_num}", end="\n\n")
 
-        if enable_duplicate and random.random() < 0.2:
+        if enable_duplicate and random.random() < 0.8:
             print(f"[Server] Duplicate packet {seq_num}", end="\n\n")
             sock.sendto(f"{seq_num}".encode(), addr)
 
-        if file.tell() == int(max_file_size):
+        print("[Server] write byte", file.tell(),"ack", seq_num)
+        print()
+
+        if file.tell() >= int(max_file_size):
             file.close()
             print(f"[Server] File {filename} received successfully!")
             

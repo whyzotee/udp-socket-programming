@@ -20,4 +20,10 @@ def generate_text_file(filename, target_size_mb=1):
             f.write(paragraph)
             current_size = f.tell() 
 
-generate_text_file('test_file.txt')
+    with open("test/"+ filename, 'w') as file:
+        while current_size < target_size_bytes:
+            paragraph = generate_paragraph() + "\n\n"
+            file.write(paragraph)
+            current_size = f.tell() 
+
+generate_text_file('test_file')
