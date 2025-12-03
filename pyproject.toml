@@ -1,0 +1,18 @@
+[project]
+name = "UDPSocket"
+version = "0.1.0"
+authors = [
+  { name="whyzotee", email="author@example.com" },
+]
+readme = "README.md"
+requires-python = ">=3.8"
+license = "MIT"
+license-files = ["LICEN[CS]E*"]
+
+[build-system]
+requires = ["hatchling >= 1.26"]
+build-backend = "hatchling.build"
+
+[project.urls]
+Homepage = "https://github.com/whyzotee/udp-socket-programming"
+Issues = "https://github.com/whyzotee/udp-socket-programming/issues"

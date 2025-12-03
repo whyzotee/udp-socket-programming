@@ -1,6 +1,7 @@
 import random
 import string
 
+
 def generate_paragraph():
     num_sentences = random.randint(3, 7)
     paragraph = ""
